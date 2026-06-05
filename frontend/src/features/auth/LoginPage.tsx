@@ -45,7 +45,7 @@ export function LoginPage() {
           <TextField label="이메일" value={email} onChange={setEmail} />
           <TextField label="비밀번호" type="password" value={password} onChange={setPassword} />
           {error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>}
-          <Button isLoading={isSubmitting}>로그인</Button>
+          <Button full isLoading={isSubmitting}>로그인</Button>
         </form>
       </section>
     </main>
