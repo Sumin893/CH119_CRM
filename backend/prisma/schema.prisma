@@ -3,41 +3,41 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
 }
 
 model Admin {
   id           Int      @id @default(autoincrement())
-  email        String   @unique
-  name         String
-  passwordHash String
+  email        String   @unique @db.VarChar(191)
+  name         String   @db.VarChar(100)
+  passwordHash String   @db.VarChar(255)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
 
 model Customer {
   id                  Int      @id @default(autoincrement())
-  name                String
-  phoneEncrypted      String
-  phoneHash           String
-  addressEncrypted    String
-  productCategory     String
-  productType         String
-  productBrand        String?
+  name                String   @db.VarChar(100)
+  phoneEncrypted      String   @db.Text
+  phoneHash           String   @db.VarChar(64)
+  addressEncrypted    String   @db.Text
+  productCategory     String   @db.VarChar(50)
+  productType         String   @db.VarChar(100)
+  productBrand        String?  @db.VarChar(100)
   productCount        Int      @default(1)
   estimateRequestDate DateTime?
   workDate            DateTime?
-  workStartTime       String?
-  workEndTime         String?
+  workStartTime       String?  @db.VarChar(5)
+  workEndTime         String?  @db.VarChar(5)
   estimatePrice       Int?
   finalPrice          Int?
   deposit             Int?
   balance             Int?
-  paymentMethod       String?
-  paymentStatus       String
-  customerStatus      String
-  memo                String?
-  specialNote         String?
+  paymentMethod       String?  @db.VarChar(50)
+  paymentStatus       String   @db.VarChar(50)
+  customerStatus      String   @db.VarChar(50)
+  memo                String?  @db.Text
+  specialNote         String?  @db.Text
   revisitDate         DateTime?
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt

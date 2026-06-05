@@ -7,20 +7,24 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate deploy",
-    "db:push": "tsx prisma/init.ts",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
-    "db:reset": "tsx prisma/reset.ts && npm run db:seed"
+    "db:studio": "prisma studio",
+    "db:reset": "node -e \"console.log('MySQL 데이터 삭제 위험이 있어 db:reset은 비활성화했습니다. 필요 시 직접 Prisma 명령을 확인 후 실행하세요.')\""
   },
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "^7.8.0",
+    "@prisma/adapter-mariadb": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^12.10.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "express-session": "^1.18.2"
+    "express-session": "^1.18.2",
+    "mariadb": "^3.5.2"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
