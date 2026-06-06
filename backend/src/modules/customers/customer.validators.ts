@@ -1,4 +1,4 @@
-import { customerStatuses, paymentStatuses, productCategories } from "./customer.constants.js";
+import { customerStatuses, normalizePaymentStatus, paymentStatuses, productCategories } from "./customer.constants.js";
 
 const requiredFields = [
   "name",
@@ -23,7 +23,7 @@ export function validateRequired(body: Record<string, unknown>) {
     return "고객 상태 값이 올바르지 않습니다.";
   }
 
-  if (!paymentStatuses.includes(String(body.paymentStatus))) {
+  if (!paymentStatuses.includes(normalizePaymentStatus(String(body.paymentStatus)))) {
     return "결제 상태 값이 올바르지 않습니다.";
   }
 

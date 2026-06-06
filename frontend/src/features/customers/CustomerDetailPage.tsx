@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ConfirmModal } from "../../components/ui/ConfirmModal";
+import { fetchRevenues } from "../finance/financeApi";
+import { Revenue } from "../finance/financeTypes";
 import { deleteCustomer, fetchCustomer } from "./customerApi";
 import { Customer } from "./customerTypes";
 import { compact, formatDate, formatMoney } from "./formatters";
@@ -10,12 +12,16 @@ export function CustomerDetailPage() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const [customer, setCustomer] = useState<Customer | null>(null);
+  const [revenues, setRevenues] = useState<Revenue[]>([]);
   const [error, setError] = useState("");
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   useEffect(() => {
-    fetchCustomer(id)
-      .then((data) => setCustomer(data.customer))
+    Promise.all([fetchCustomer(id), fetchRevenues({ customerId: id })])
+      .then(([customerData, revenueData]) => {
+        setCustomer(customerData.customer);
+        setRevenues(revenueData.revenues);
+      })
       .catch((err) => setError(err instanceof Error ? err.message : "고객 정보를 불러오지 못했습니다."));
   }, [id]);
 
@@ -60,6 +66,21 @@ export function CustomerDetailPage() {
         <InfoCard title="메모" items={[["작업 메모", customer.memo], ["특이사항", customer.specialNote]]} />
         <InfoCard title="재방문 정보" items={[["재방문 예정일", formatDate(customer.revisitDate)]]} />
       </div>
+      <section className="mt-5 rounded-lg border border-slate-200 bg-white p-5">
+        <h2 className="mb-4 font-bold text-brand-navy">연결된 수입 내역</h2>
+        {revenues.length === 0 ? <p className="text-sm text-slate-500">연결된 수입 내역이 없습니다.</p> : null}
+        <div className="space-y-2">
+          {revenues.map((revenue) => (
+            <div className="grid grid-cols-[100px_1fr_120px_100px_80px] gap-3 rounded-lg border border-slate-100 px-4 py-3 text-sm" key={revenue.id}>
+              <span>{revenue.date.replace(/-/g, ".")}</span>
+              <span>{revenue.category}</span>
+              <strong>{formatMoney(revenue.amount)}</strong>
+              <span>{revenue.paymentMethod ?? "-"}</span>
+              <span className="font-semibold text-brand-blue">{revenue.sourceType === "CUSTOMER_PAYMENT" ? "자동 등록" : "수동 등록"}</span>
+            </div>
+          ))}
+        </div>
+      </section>
       {isConfirmOpen && (
         <ConfirmModal
           title="고객 삭제"

@@ -74,7 +74,7 @@ export function CustomerListPage() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {customers.map((customer) => (
-                <tr className="hover:bg-slate-50/70" key={customer.id}>
+                <tr className="cursor-pointer hover:bg-slate-50/70" key={customer.id} onClick={() => navigate(`/customers/${customer.id}`)}>
                   <Td>{customer.name}</Td>
                   <Td>{customer.phone}</Td>
                   <Td><span className="block truncate">{customer.address}</span></Td>
@@ -86,7 +86,7 @@ export function CustomerListPage() {
                   <Td><StatusBadge value={customer.paymentStatus} /></Td>
                   <Td><StatusBadge value={customer.customerStatus} /></Td>
                   <Td>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2" onClick={(event) => event.stopPropagation()}>
                       <Link className="text-brand-blue" to={`/customers/${customer.id}`}>상세</Link>
                       <Link className="text-slate-600" to={`/customers/${customer.id}/edit`}>수정</Link>
                       <button className="text-red-600" onClick={() => setDeleteTarget(customer)}>삭제</button>

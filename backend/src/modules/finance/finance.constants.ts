@@ -1,0 +1,29 @@
+export const revenueCategories = [
+  "에어컨 청소",
+  "세탁기 청소",
+  "건조기 청소",
+  "패키지 작업",
+  "출장비",
+  "추가 옵션",
+  "기타 수입",
+];
+
+export const expenseCategories = [
+  "세제/소모품",
+  "청소 도구/작업 용품",
+  "장비 구매",
+  "장비 수리",
+  "차량/유류비",
+  "주차비/통행료",
+  "광고비",
+  "현수막 제작비",
+  "명함 제작비",
+  "블로그/마케팅",
+  "플랫폼 수수료",
+  "기타 비용",
+];
+
+export const revenueSourceTypes = {
+  manual: "MANUAL",
+  customerPayment: "CUSTOMER_PAYMENT",
+};

@@ -41,6 +41,7 @@ model Customer {
   revisitDate         DateTime?
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
+  revenues            Revenue[]
 
   @@index([phoneHash])
   @@index([productCategory])
@@ -48,4 +49,40 @@ model Customer {
   @@index([paymentStatus])
   @@index([workDate])
   @@index([revisitDate])
+}
+
+model Revenue {
+  id               Int       @id @default(autoincrement())
+  date             DateTime
+  customerId       Int?
+  customer         Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  category         String    @db.VarChar(100)
+  amount           Int
+  paymentMethod    String?   @db.VarChar(50)
+  memo             String?   @db.Text
+  sourceType       String    @default("MANUAL") @db.VarChar(50)
+  sourceCustomerId Int?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@unique([sourceType, sourceCustomerId])
+  @@index([date])
+  @@index([category])
+  @@index([paymentMethod])
+  @@index([customerId])
+}
+
+model Expense {
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  category  String   @db.VarChar(100)
+  amount    Int
+  vendor    String?  @db.VarChar(100)
+  memo      String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([date])
+  @@index([category])
+  @@index([vendor])
 }

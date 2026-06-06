@@ -1,6 +1,8 @@
 import type { Prisma } from "@prisma/client";
 import { prisma } from "../../config/prisma.js";
 import { encryptText, hashPhone, normalizePhone } from "../../utils/crypto.js";
+import { createOrUpdateRevenueFromCustomerPayment } from "../finance/revenue.service.js";
+import { normalizePaymentStatus } from "./customer.constants.js";
 import { toCustomerResponse } from "./customer.mapper.js";
 import { toOptionalDate, toOptionalNumber, toOptionalString } from "./customer.validators.js";
 
@@ -34,7 +36,7 @@ function baseData(body: CustomerBody) {
     deposit: toOptionalNumber(body.deposit),
     balance: toOptionalNumber(body.balance),
     paymentMethod: toOptionalString(body.paymentMethod),
-    paymentStatus: String(body.paymentStatus ?? ""),
+    paymentStatus: normalizePaymentStatus(String(body.paymentStatus ?? "")),
     customerStatus: String(body.customerStatus ?? ""),
     memo: toOptionalString(body.memo),
     specialNote: toOptionalString(body.specialNote),
@@ -107,6 +109,8 @@ export async function createCustomer(body: CustomerBody) {
     },
   });
 
+  await createOrUpdateRevenueFromCustomerPayment(customer);
+
   return toCustomerResponse(customer);
 }
 
@@ -131,6 +135,8 @@ export async function updateCustomer(id: number, body: CustomerBody) {
   }
 
   const customer = await prisma.customer.update({ where: { id }, data });
+
+  await createOrUpdateRevenueFromCustomerPayment(customer);
 
   return toCustomerResponse(customer);
 }
