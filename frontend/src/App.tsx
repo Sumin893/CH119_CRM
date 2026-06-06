@@ -7,6 +7,7 @@ import { CustomerListPage } from "./features/customers/CustomerListPage";
 import { CustomerNewPage } from "./features/customers/CustomerNewPage";
 import { FinancePage } from "./features/finance/FinancePage";
 import { CalendarPage } from "./features/schedules/CalendarPage";
+import { StatsPage } from "./features/stats/StatsPage";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { DashboardPage } from "./pages/DashboardPage";
 import { PlaceholderPage } from "./pages/PlaceholderPage";
@@ -24,7 +25,7 @@ export function App() {
           <Route path="/customers/:id/edit" element={<CustomerEditPage />} />
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/finance" element={<FinancePage />} />
-          <Route path="/stats" element={<PlaceholderPage title="통계" />} />
+          <Route path="/stats" element={<StatsPage />} />
           <Route path="/settings" element={<PlaceholderPage title="설정" />} />
         </Route>
       </Route>

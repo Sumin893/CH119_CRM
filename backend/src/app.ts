@@ -8,6 +8,7 @@ import { authRouter } from "./modules/auth/auth.routes.js";
 import { customerRouter } from "./modules/customers/customer.routes.js";
 import { expenseRouter, financeRouter, revenueRouter } from "./modules/finance/finance.routes.js";
 import { scheduleRouter } from "./modules/schedules/schedule.routes.js";
+import { statsRouter } from "./modules/stats/stats.routes.js";
 import { validateEncryptionConfig } from "./utils/crypto.js";
 import "./modules/auth/session.js";
 
@@ -32,5 +33,6 @@ app.use("/api/schedules", scheduleRouter);
 app.use("/api/revenues", revenueRouter);
 app.use("/api/expenses", expenseRouter);
 app.use("/api/finance", financeRouter);
+app.use("/api/stats", statsRouter);
 app.use(notFound);
 app.use(errorHandler);

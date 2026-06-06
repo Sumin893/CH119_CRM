@@ -12,6 +12,8 @@
 - 대시보드 작업 일정 카드
 - 매출/비용 관리
 - 고객 결제 완료 시 자동 수입 등록
+- 통계 대시보드
+- 고객, 작업, 매출, 비용, 재방문 자동 집계
 - 고객 전화번호, 작업주소 암호화 저장
 - 관리자 비밀번호 bcrypt 해시 저장
 
@@ -144,6 +146,7 @@ npm run dev
 - 고객 수정: `/customers/:id/edit`
 - 일정 달력: `/calendar`
 - 매출/비용 관리: `/finance`
+- 통계: `/stats`
 
 ## API
 
@@ -189,6 +192,27 @@ npm run dev
 
 매출/비용 API는 로그인된 관리자만 접근할 수 있습니다.
 
+### 통계
+
+- `GET /api/stats/summary`
+- `GET /api/stats/monthly`
+- `GET /api/stats/categories`
+- `GET /api/stats/customers`
+- `GET /api/stats/revisit`
+- `GET /api/stats/dashboard`
+
+통계 API는 로그인된 관리자만 접근할 수 있습니다. 고객 전화번호, 주소, `phoneEncrypted`, `phoneHash`, `addressEncrypted`는 통계 응답에 포함하지 않습니다.
+
+공통 기간 필터:
+
+- `period=thisMonth`
+- `period=last3Months`
+- `period=last6Months`
+- `period=thisYear`
+- `period=custom&dateFrom=YYYY-MM-DD&dateTo=YYYY-MM-DD`
+
+기간 query가 없으면 이번 달 기준으로 조회합니다. `custom`에서 시작일 또는 종료일이 없으면 이번 달로 fallback합니다.
+
 ## 고객 검색과 필터
 
 `GET /api/customers`는 다음 query를 지원합니다.
@@ -216,13 +240,22 @@ npm run dev
 
 ## 대시보드 일정 연동
 
-대시보드는 일정 API를 사용해 다음 값을 표시합니다.
+대시보드는 통계 API를 사용해 다음 값을 표시합니다.
 
 - 오늘 작업 일정 수
 - 이번 주 작업 일정 수
 - 다가오는 작업 일정 5개
+- 이번 달 매출
+- 이번 달 비용
+- 이번 달 순이익
+- 미결제 고객 수
+- 미결제 금액
+- 재방문 예정 고객 수
+- 결제 완료 고객 수
+- 미결제 고객 5명
+- 재방문 예정 고객 5명
 
-대시보드의 이번 달 매출, 이번 달 비용, 이번 달 순이익은 매출/비용 요약 API와 연결되어 있습니다. 전체 통계 화면은 다음 단계에서 별도 기능으로 연결합니다.
+대시보드의 순이익은 0 이상이면 초록색, 음수이면 빨간색으로 표시합니다.
 
 ## 매출/비용 관리
 
@@ -276,6 +309,32 @@ npm run dev
 
 고객 상세 페이지에는 연결된 수입 내역이 표시되며, 자동 등록과 수동 등록을 구분해서 보여줍니다.
 
+## 통계
+
+`/stats`에서 고객, 작업, 매출, 비용 데이터를 별도 입력 없이 자동 집계합니다. 차트는 Recharts를 사용합니다.
+
+통계 화면 구성:
+
+- 기간 필터: 이번 달, 최근 3개월, 최근 6개월, 올해, 직접 선택
+- 요약 카드: 총 매출, 총 비용, 순이익, 작업 건수, 평균 작업 단가, 미결제 금액, 결제 완료 고객, 미결제 고객
+- 월별 추이: 매출, 비용, 순이익, 작업 건수
+- 카테고리 분석: 수입/비용 카테고리, 결제 방식, 자동/수동 등록, 제품별 매출, 제품별 작업 건수
+- 고객 분석: 고객 상태, 결제 상태, 제품 상세별 작업 건수
+- 고객 목록: 미결제 고객, 최근 완료 고객
+- 재방문 목록: 지연 고객, 이번 달 재방문, 30일 이내 재방문
+
+계산 기준:
+
+- 매출 통계는 `Revenue.date`와 `Revenue.amount` 기준입니다.
+- 비용 통계는 `Expense.date`와 `Expense.amount` 기준입니다.
+- 작업 통계는 `Customer.workDate` 기준이며, 고객 상태가 `취소`인 고객은 제외합니다.
+- 미결제 통계는 `Customer.paymentStatus` 기준입니다.
+- 미결제 금액은 `finalPrice`를 우선 사용하고, 없으면 `estimatePrice`를 사용한 뒤 `deposit`을 차감합니다.
+- 자동 등록 매출은 `Revenue.sourceType = CUSTOMER_PAYMENT`, 수동 등록 매출은 `MANUAL`로 구분합니다.
+- 재방문 통계는 `Customer.revisitDate` 기준입니다.
+
+재방문 관리는 이번 단계에서 조회와 고객 상세 이동만 제공합니다. 재방문 완료 처리, 알림, 문자 발송은 추후 기능 후보입니다.
+
 ## 개인정보 보호 구조
 
 - 고객 전화번호는 `phoneEncrypted`에 AES-256-GCM으로 암호화해 저장합니다.
@@ -285,6 +344,7 @@ npm run dev
 - API 응답에 `phoneEncrypted`, `phoneHash`, `addressEncrypted`는 노출하지 않습니다.
 - 일정 API 응답에도 `phoneEncrypted`, `phoneHash`, `addressEncrypted`는 노출하지 않습니다.
 - 일정 API는 `phoneMasked`, `addressSummary`만 제공합니다.
+- 통계 API는 개인정보 암호화 필드를 노출하지 않습니다.
 - 관리자 비밀번호는 bcrypt 해시로 저장합니다.
 
 `ENCRYPTION_KEY`는 32바이트 이상이어야 합니다. 이 키를 잃어버리면 기존 고객 전화번호와 주소를 복호화할 수 없습니다.
@@ -316,6 +376,11 @@ npm run dev
 - 고객 결제 완료 시 자동 수입 생성 확인
 - 고객 상세의 연결된 수입 내역 확인
 - 대시보드 이번 달 매출/비용/순이익 확인
+- 통계 페이지에서 이번 달, 최근 3개월, 최근 6개월, 올해, 직접 선택 조회 확인
+- 통계 요약 카드와 월별 차트 확인
+- 수입/비용 카테고리, 결제 방식, 제품별 통계 확인
+- 미결제 고객, 최근 완료 고객, 재방문 고객 목록 확인
+- 통계 목록에서 고객 상세 이동 확인
 - 서버 재시작 후 MySQL 데이터 유지 확인
 - 다른 브라우저 또는 다른 기기에서 같은 서버 접속 시 데이터 확인 가능 여부
 - MySQL Workbench 또는 Prisma Studio에서 테이블과 데이터 확인
