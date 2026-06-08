@@ -18,12 +18,18 @@ validateEncryptionConfig();
 
 app.use(cors({ origin: env.frontendOrigin, credentials: true }));
 app.use(express.json());
+app.set("trust proxy", 1);
+
 app.use(
   session({
     secret: env.sessionSecret,
     resave: false,
     saveUninitialized: false,
-    cookie: { httpOnly: true, sameSite: "lax" },
+    cookie: {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    },
   }),
 );
 
