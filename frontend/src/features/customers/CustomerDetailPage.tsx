@@ -35,15 +35,15 @@ export function CustomerDetailPage() {
 
   return (
     <section>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold text-brand-navy">{customer.name}</h1>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Link className="rounded-lg border border-slate-200 px-4 py-2 text-sm" to="/customers">목록으로</Link>
-          <Link className="rounded-lg bg-brand-blue px-4 py-2 text-sm font-semibold text-white" to={`/customers/${id}/edit`}>수정</Link>
-          <button className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white" onClick={() => setIsConfirmOpen(true)}>삭제</button>
+          <Link className="hidden rounded-lg bg-brand-blue px-4 py-2 text-sm font-semibold text-white sm:inline-block" to={`/customers/${id}/edit`}>수정</Link>
+          <button className="hidden rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white sm:inline-block" onClick={() => setIsConfirmOpen(true)}>삭제</button>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5">
         <InfoCard title="기본 정보" items={[["이름", customer.name], ["전화번호", customer.phone], ["주소", customer.address]]} />
         <InfoCard title="작업 정보" items={[
           ["의뢰 제품", customer.productCategory],
@@ -71,7 +71,7 @@ export function CustomerDetailPage() {
         {revenues.length === 0 ? <p className="text-sm text-slate-500">연결된 수입 내역이 없습니다.</p> : null}
         <div className="space-y-2">
           {revenues.map((revenue) => (
-            <div className="grid grid-cols-[100px_1fr_120px_100px_80px] gap-3 rounded-lg border border-slate-100 px-4 py-3 text-sm" key={revenue.id}>
+            <div className="grid grid-cols-1 gap-2 rounded-lg border border-slate-100 px-4 py-3 text-sm sm:grid-cols-[100px_1fr_120px_100px_80px] sm:gap-3" key={revenue.id}>
               <span>{revenue.date.replace(/-/g, ".")}</span>
               <span>{revenue.category}</span>
               <strong>{formatMoney(revenue.amount)}</strong>
@@ -101,9 +101,9 @@ function InfoCard({ title, items }: { title: string; items: InfoItem[] }) {
       <h2 className="mb-4 font-bold text-brand-navy">{title}</h2>
       <dl className="space-y-3">
         {items.map(([label, value]) => (
-          <div className="grid grid-cols-[110px_1fr] gap-4 text-sm" key={label}>
+          <div className="grid grid-cols-1 gap-1 text-sm sm:grid-cols-[110px_1fr] sm:gap-4" key={label}>
             <dt className="text-slate-500">{label}</dt>
-            <dd className="text-slate-800">{compact(value as string)}</dd>
+            <dd className="min-w-0 break-words text-slate-800">{compact(value as string)}</dd>
           </div>
         ))}
       </dl>

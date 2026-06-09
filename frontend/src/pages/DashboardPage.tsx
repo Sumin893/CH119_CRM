@@ -23,7 +23,7 @@ export function DashboardPage() {
       <p className="mt-2 text-sm text-slate-500">오늘과 이번 주 작업 일정을 확인합니다.</p>
       {error && <p className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>}
 
-      <div className="mt-6 grid grid-cols-5 gap-5">
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-5">
         <DashboardCard label="오늘 작업 일정" value={`${dashboard?.todayScheduleCount ?? 0}건`} />
         <DashboardCard label="이번 주 작업 일정" value={`${dashboard?.thisWeekScheduleCount ?? 0}건`} />
         <DashboardCard label="이번 달 매출" value={formatMoney(dashboard?.totalRevenue ?? 0)} />
@@ -36,7 +36,7 @@ export function DashboardPage() {
         <DashboardCard label="이번 달 완료" value={`${dashboard?.thisMonthCompletedWorkCount ?? 0}건`} />
       </div>
 
-      <div className="mt-6 grid grid-cols-3 gap-5">
+      <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
         <section className="rounded-lg border border-slate-200 bg-white p-5">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="font-bold text-brand-navy">다가오는 작업 일정</h2>
@@ -108,9 +108,9 @@ function DashboardCard({ label, value, tone = "default" }: DashboardCardProps) {
   }[tone];
 
   return (
-    <article className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+    <article className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
       <p className="text-sm text-slate-500">{label}</p>
-      <p className={`mt-3 text-2xl font-bold ${toneClass}`}>{value}</p>
+      <p className={`mt-3 break-words text-xl font-bold sm:text-2xl ${toneClass}`}>{value}</p>
     </article>
   );
 }

@@ -4,7 +4,7 @@ import { menuItems } from "./menu";
 
 export function Sidebar() {
   return (
-    <aside className="w-64 border-r border-slate-200 bg-white px-4 py-6">
+    <aside className="hidden w-64 shrink-0 border-r border-slate-200 bg-white px-4 py-6 lg:block">
       <div className="mb-8 flex items-center gap-3 px-2">
         <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-brand-cyan/10">
           <Sparkles className="h-5 w-5 text-brand-cyan" />

@@ -104,14 +104,14 @@ export function StatsPage() {
       </div>
 
       <div className="mt-6 rounded-lg border border-slate-200 bg-white p-4">
-        <div className="grid grid-cols-[220px_160px_160px_auto_auto] gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[220px_160px_160px_auto_auto]">
           <select className="h-10 rounded-lg border border-slate-200 px-3 text-sm" value={period} onChange={(event) => setPeriod(event.target.value)}>
             {periodOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
           </select>
           <input className="h-10 rounded-lg border border-slate-200 px-3 text-sm" disabled={period !== "custom"} type="date" value={draft.dateFrom} onChange={(e) => setDraft({ ...draft, dateFrom: e.target.value })} />
           <input className="h-10 rounded-lg border border-slate-200 px-3 text-sm" disabled={period !== "custom"} type="date" value={draft.dateTo} onChange={(e) => setDraft({ ...draft, dateTo: e.target.value })} />
-          <button className="rounded-lg bg-brand-blue px-4 text-sm font-semibold text-white" onClick={search}>조회</button>
-          <button className="rounded-lg border border-slate-200 px-4 text-sm" onClick={reset}>초기화</button>
+          <button className="h-10 rounded-lg bg-brand-blue px-4 text-sm font-semibold text-white" onClick={search}>조회</button>
+          <button className="h-10 rounded-lg border border-slate-200 px-4 text-sm" onClick={reset}>초기화</button>
         </div>
       </div>
 
@@ -121,7 +121,7 @@ export function StatsPage() {
       {!isLoading && summary ? (
         <>
           <SummaryGrid summary={summary} />
-          <div className="mt-6 grid grid-cols-2 gap-5">
+          <div className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-5">
             <ChartBox title="월별 매출/비용/순이익">
               <ResponsiveContainer height={300} width="100%">
                 <BarChart data={monthly}>
@@ -163,7 +163,7 @@ export function StatsPage() {
 
 function SummaryGrid({ summary }: { summary: StatsSummary }) {
   return (
-    <div className="mt-6 grid grid-cols-4 gap-5">
+    <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-5">
       <SummaryCard label="총 매출" value={formatMoney(summary.totalRevenue)} tone="blue" />
       <SummaryCard label="총 비용" value={formatMoney(summary.totalExpense)} tone="red" />
       <SummaryCard label="순이익" value={formatMoney(summary.netProfit)} tone={summary.netProfit < 0 ? "red" : "green"} />
@@ -184,12 +184,12 @@ function SummaryCard({ label, value, tone = "navy" }: { label: string; tone?: st
     red: "text-red-600",
   };
 
-  return <article className="rounded-lg border border-slate-200 bg-white p-5"><p className="text-sm text-slate-500">{label}</p><p className={`mt-3 text-2xl font-bold ${colors[tone]}`}>{value}</p></article>;
+  return <article className="rounded-lg border border-slate-200 bg-white p-4 sm:p-5"><p className="text-sm text-slate-500">{label}</p><p className={`mt-3 break-words text-xl font-bold sm:text-2xl ${colors[tone]}`}>{value}</p></article>;
 }
 
 function CategoryCharts({ categories }: { categories: StatsCategories }) {
   return (
-    <div className="mt-6 grid grid-cols-3 gap-5">
+    <div className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-3 xl:gap-5">
       <BarGroup title="수입 카테고리별 매출" data={categories.revenueByCategory} labelKey="category" valueKey="total" />
       <BarGroup title="비용 카테고리별 지출" data={categories.expenseByCategory} labelKey="category" valueKey="total" />
       <PieGroup title="결제 방식별 매출" data={categories.revenueByPaymentMethod} nameKey="paymentMethod" />
@@ -202,7 +202,7 @@ function CategoryCharts({ categories }: { categories: StatsCategories }) {
 
 function CustomerCharts({ customers }: { customers: StatsCustomers }) {
   return (
-    <div className="mt-6 grid grid-cols-3 gap-5">
+    <div className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-3 xl:gap-5">
       <BarGroup title="고객 상태별 건수" data={customers.customerStatusCounts} labelKey="label" valueKey="count" />
       <BarGroup title="결제 상태별 건수" data={customers.paymentStatusCounts} labelKey="label" valueKey="count" />
       <BarGroup title="제품 상세별 작업 건수" data={customers.workCountByProductType} labelKey="productType" valueKey="count" />
@@ -247,7 +247,7 @@ function PieGroup({ data, nameKey, title }: { data: MoneyGroup[]; nameKey: strin
 }
 
 function ChartBox({ children, title }: { children: React.ReactNode; title: string }) {
-  return <section className="rounded-lg border border-slate-200 bg-white p-5"><h2 className="mb-4 font-bold text-brand-navy">{title}</h2>{children}</section>;
+  return <section className="rounded-lg border border-slate-200 bg-white p-4 sm:p-5"><h2 className="mb-4 font-bold text-brand-navy">{title}</h2>{children}</section>;
 }
 
 function EmptyBox({ title }: { title: string }) {
@@ -256,7 +256,7 @@ function EmptyBox({ title }: { title: string }) {
 
 function CustomerLists({ customers }: { customers: StatsCustomers }) {
   return (
-    <div className="mt-6 grid grid-cols-2 gap-5">
+    <div className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-5">
       <CustomerTable title="미결제 고객" customers={customers.unpaidCustomers} />
       <CustomerTable title="최근 완료 고객" customers={customers.recentCompletedCustomers} />
     </div>
@@ -270,7 +270,7 @@ function CustomerTable({ customers, title }: { customers: StatsCustomer[]; title
       {customers.length === 0 ? <p className="mt-4 text-sm text-slate-500">표시할 고객이 없습니다.</p> : null}
       <div className="mt-4 space-y-2">
         {customers.map((customer) => (
-          <Link className="grid grid-cols-[1fr_110px_auto] items-center gap-3 rounded-lg border border-slate-100 px-3 py-2 hover:bg-brand-soft" key={customer.id} to={`/customers/${customer.id}`}>
+          <Link className="grid grid-cols-1 gap-2 rounded-lg border border-slate-100 px-3 py-2 hover:bg-brand-soft sm:grid-cols-[1fr_110px_auto] sm:items-center sm:gap-3" key={customer.id} to={`/customers/${customer.id}`}>
             <span className="truncate text-sm font-semibold text-brand-navy">{customer.name} / {customer.productCategory} {customer.productType}</span>
             <span className="text-xs text-slate-500">{formatDate(customer.workDate)}</span>
             <StatusBadge value={customer.paymentStatus} />
@@ -283,7 +283,7 @@ function CustomerTable({ customers, title }: { customers: StatsCustomer[]; title
 
 function RevisitSection({ revisit }: { revisit: StatsRevisit }) {
   return (
-    <div className="mt-6 grid grid-cols-3 gap-5">
+    <div className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-3 xl:gap-5">
       <RevisitList title="재방문 지연 고객" customers={revisit.overdueRevisits} />
       <RevisitList title="이번 달 재방문" customers={revisit.thisMonthRevisits} />
       <RevisitList title="30일 이내 재방문" customers={revisit.upcomingRevisits} />

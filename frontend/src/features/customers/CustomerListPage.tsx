@@ -37,12 +37,12 @@ export function CustomerListPage() {
 
   return (
     <section>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-brand-navy">고객 관리</h1>
           <p className="mt-2 text-sm text-slate-500">고객 정보와 작업, 결제 상태를 관리합니다.</p>
         </div>
-        <Link className="flex h-10 items-center gap-2 rounded-lg bg-brand-blue px-4 text-sm font-semibold text-white" to="/customers/new">
+        <Link className="hidden h-10 items-center gap-2 rounded-lg bg-brand-blue px-4 text-sm font-semibold text-white sm:flex" to="/customers/new">
           <Plus className="h-4 w-4" />
           고객 추가
         </Link>
@@ -52,10 +52,11 @@ export function CustomerListPage() {
 
       {error && <p className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>}
 
-      <div className="mt-5 overflow-x-auto rounded-lg border border-slate-200 bg-white">
+      <div className="mt-5 rounded-lg border border-slate-200 bg-white">
         {isLoading ? <StateText text="고객 목록을 불러오는 중입니다." /> : null}
         {!isLoading && customers.length === 0 ? <StateText text="등록된 고객이 없습니다." /> : null}
         {!isLoading && customers.length > 0 ? (
+          <div className="hidden overflow-x-auto md:block">
           <table className="min-w-[1280px] table-fixed text-left text-sm">
             <thead className="bg-slate-50 text-xs font-semibold text-slate-500">
               <tr>
@@ -96,6 +97,29 @@ export function CustomerListPage() {
               ))}
             </tbody>
           </table>
+          </div>
+        ) : null}
+        {!isLoading && customers.length > 0 ? (
+          <div className="md:hidden">
+            {customers.map((customer) => (
+              <Link className="block border-b border-slate-100 p-4 last:border-b-0" key={customer.id} to={`/customers/${customer.id}`}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-base font-bold text-brand-navy">{customer.name}</p>
+                    <p className="mt-1 text-sm text-slate-500">{customer.phone}</p>
+                  </div>
+                  <StatusBadge value={customer.customerStatus} />
+                </div>
+                <p className="mt-3 line-clamp-2 text-sm text-slate-700">{customer.address}</p>
+                <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
+                  <InfoText label="작업일" value={formatDate(customer.workDate)} />
+                  <InfoText label="상품" value={`${customer.productCategory} ${customer.productType}`} />
+                  <InfoText label="금액" value={formatMoney(customer.finalPrice)} />
+                  <InfoText label="결제" value={<StatusBadge value={customer.paymentStatus} />} />
+                </div>
+              </Link>
+            ))}
+          </div>
         ) : null}
       </div>
 
@@ -117,8 +141,8 @@ function FilterPanel({ filters, onChange }: FilterPanelProps) {
   }
 
   return (
-    <div className="mt-6 grid grid-cols-6 gap-3 rounded-lg border border-slate-200 bg-white p-4">
-      <input className="col-span-2 h-10 rounded-lg border border-slate-200 px-3 text-sm" placeholder="이름, 전화번호, 주소 검색" value={filters.search ?? ""} onChange={(e) => setFilter("search", e.target.value)} />
+    <div className="mt-6 grid grid-cols-1 gap-3 rounded-lg border border-slate-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-6">
+      <input className="h-10 rounded-lg border border-slate-200 px-3 text-sm sm:col-span-2" placeholder="이름, 전화번호, 주소 검색" value={filters.search ?? ""} onChange={(e) => setFilter("search", e.target.value)} />
       <Select value={filters.productCategory ?? ""} options={["", ...productCategories]} onChange={(v) => setFilter("productCategory", v)} />
       <Select value={filters.customerStatus ?? ""} options={["", ...customerStatuses]} onChange={(v) => setFilter("customerStatus", v)} />
       <Select value={filters.paymentStatus ?? ""} options={["", ...paymentStatuses]} onChange={(v) => setFilter("paymentStatus", v)} />
@@ -128,7 +152,7 @@ function FilterPanel({ filters, onChange }: FilterPanelProps) {
       </button>
       <input className="h-10 rounded-lg border border-slate-200 px-3 text-sm" type="date" value={filters.workDateFrom ?? ""} onChange={(e) => setFilter("workDateFrom", e.target.value)} />
       <input className="h-10 rounded-lg border border-slate-200 px-3 text-sm" type="date" value={filters.workDateTo ?? ""} onChange={(e) => setFilter("workDateTo", e.target.value)} />
-      <label className="col-span-2 flex h-10 items-center gap-2 text-sm text-slate-600">
+      <label className="flex min-h-10 items-center gap-2 text-sm text-slate-600 sm:col-span-2">
         <input checked={Boolean(filters.revisitOnly)} type="checkbox" onChange={(e) => setFilter("revisitOnly", e.target.checked)} />
         재방문 예정 고객만 보기
       </label>
@@ -154,6 +178,15 @@ type SelectProps = {
   value: string;
   onChange: (value: string) => void;
 };
+
+function InfoText({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="min-w-0 rounded-lg bg-slate-50 px-3 py-2">
+      <p className="text-xs text-slate-500">{label}</p>
+      <div className="mt-1 truncate font-semibold text-slate-800">{value}</div>
+    </div>
+  );
+}
 
 function StateText({ text }: { text: string }) {
   return <div className="p-10 text-center text-sm text-slate-500">{text}</div>;

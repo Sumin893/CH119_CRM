@@ -27,8 +27,8 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: env.cookieSecure,
+      sameSite: env.cookieSecure ? "none" : "lax",
     },
   }),
 );

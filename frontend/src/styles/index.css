@@ -14,3 +14,31 @@ body {
     sans-serif;
   background: #f3fbfc;
 }
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+span,
+dt,
+dd,
+td,
+th,
+a,
+button {
+  overflow-wrap: anywhere;
+}

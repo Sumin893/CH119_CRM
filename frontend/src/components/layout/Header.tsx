@@ -5,7 +5,7 @@ export function Header() {
   const { admin, logout } = useAuth();
 
   return (
-    <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-8">
+    <header className="hidden h-16 items-center justify-between border-b border-slate-200 bg-white px-8 lg:flex">
       <div>
         <p className="text-sm text-slate-500">관리자 페이지</p>
         <p className="font-semibold text-brand-navy">{admin?.name}님, 환영합니다.</p>

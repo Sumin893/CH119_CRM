@@ -47,12 +47,12 @@ export function CalendarPage() {
 
   return (
     <section>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-brand-navy">일정 달력</h1>
           <p className="mt-2 text-sm text-slate-500">고객 작업 날짜를 기준으로 월간 일정을 확인합니다.</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm" onClick={goToday}>이번 달</button>
           <IconButton onClick={() => moveMonth(-1)}><ChevronLeft className="h-4 w-4" /></IconButton>
           <p className="min-w-32 text-center text-lg font-bold text-brand-navy">{monthTitle(monthDate)}</p>
@@ -62,10 +62,10 @@ export function CalendarPage() {
 
       {error && <p className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>}
 
-      <div className="mt-6 grid grid-cols-[minmax(0,1fr)_360px] gap-5">
+      <div className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_360px] xl:gap-5">
         <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
           <div className="grid grid-cols-7 border-b border-slate-200 bg-slate-50">
-            {weekdays.map((day) => <div className="px-3 py-3 text-center text-sm font-bold text-slate-500" key={day}>{day}</div>)}
+            {weekdays.map((day) => <div className="px-1 py-2 text-center text-xs font-bold text-slate-500 sm:px-3 sm:py-3 sm:text-sm" key={day}>{day}</div>)}
           </div>
           <div className="grid grid-cols-7">
             {buildCalendarDays(monthDate).map((date) => {
@@ -78,7 +78,7 @@ export function CalendarPage() {
               return (
                 <button
                   className={[
-                    "min-h-36 border-b border-r border-slate-100 p-2 text-left align-top transition hover:bg-brand-soft",
+                    "min-h-16 border-b border-r border-slate-100 p-1 text-left align-top transition hover:bg-brand-soft sm:min-h-28 sm:p-2 lg:min-h-36",
                     !isCurrentMonth ? "bg-slate-50/70 text-slate-300" : "bg-white",
                     isSelected ? "ring-2 ring-inset ring-brand-cyan" : "",
                   ].join(" ")}
@@ -87,12 +87,12 @@ export function CalendarPage() {
                   type="button"
                 >
                   <div className="mb-2 flex items-center justify-between">
-                    <span className={`flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold ${isToday ? "bg-brand-blue text-white" : ""}`}>
+                    <span className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold sm:h-7 sm:w-7 sm:text-sm ${isToday ? "bg-brand-blue text-white" : ""}`}>
                       {date.getDate()}
                     </span>
-                    {daySchedules.length > 0 && <span className="text-xs font-semibold text-brand-cyan">{daySchedules.length}건</span>}
+                    {daySchedules.length > 0 && <span className="text-[11px] font-semibold text-brand-cyan sm:text-xs">{daySchedules.length}건</span>}
                   </div>
-                  <div className="space-y-1">
+                  <div className="hidden space-y-1 sm:block">
                     {daySchedules.slice(0, 3).map((schedule) => (
                       <div
                         className="truncate rounded-md bg-brand-cyan/10 px-2 py-1 text-xs font-medium text-brand-navy"

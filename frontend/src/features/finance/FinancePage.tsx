@@ -78,7 +78,7 @@ export function FinancePage() {
 
   return (
     <section>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-brand-navy">매출/비용 관리</h1>
           <p className="mt-2 text-sm text-slate-500">월별 수입, 비용, 순이익을 관리합니다.</p>
@@ -86,29 +86,29 @@ export function FinancePage() {
         <input className="h-10 rounded-lg border border-slate-200 px-3 text-sm" type="month" value={month} onChange={(e) => setMonth(e.target.value)} />
       </div>
       {error && <p className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>}
-      <div className="mt-6 grid grid-cols-3 gap-5">
+      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3 lg:gap-5">
         <SummaryCard label="총 수입" value={summary?.totalRevenue ?? 0} tone="revenue" />
         <SummaryCard label="총 비용" value={summary?.totalExpense ?? 0} tone="expense" />
         <SummaryCard label="순이익" value={summary?.netProfit ?? 0} tone={(summary?.netProfit ?? 0) < 0 ? "expense" : "profit"} />
       </div>
-      <div className="mt-6 grid grid-cols-2 gap-5">
+      <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5">
         <CategoryBox title="수입 카테고리별 합계" items={categories.revenueByCategory} />
         <CategoryBox title="비용 카테고리별 합계" items={categories.expenseByCategory} />
       </div>
       <div className="mt-6 rounded-lg border border-slate-200 bg-white">
-        <div className="flex items-center justify-between border-b border-slate-200 p-4">
+        <div className="flex flex-col gap-3 border-b border-slate-200 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex gap-2">
             <TabButton active={tab === "revenues"} onClick={() => setTab("revenues")}>수입 내역</TabButton>
             <TabButton active={tab === "expenses"} onClick={() => setTab("expenses")}>비용 내역</TabButton>
           </div>
           <button
-            className="rounded-lg bg-brand-blue px-4 py-2 text-sm font-semibold text-white"
+            className="hidden rounded-lg bg-brand-blue px-4 py-2 text-sm font-semibold text-white sm:block"
             onClick={() => (tab === "revenues" ? setEditingRevenue(emptyRevenue(month)) : setEditingExpense(emptyExpense(month)))}
           >
             {tab === "revenues" ? "수입 추가" : "비용 추가"}
           </button>
         </div>
-        <div className="grid grid-cols-4 gap-3 border-b border-slate-100 p-4">
+        <div className="grid grid-cols-1 gap-3 border-b border-slate-100 p-4 sm:grid-cols-2 lg:grid-cols-4">
           {tab === "revenues" ? (
             <>
               <Select label="카테고리" value={revenueCategory} onChange={setRevenueCategory} options={["", ...revenueCategories]} labels={{ "": "전체" }} />
@@ -146,7 +146,7 @@ export function FinancePage() {
 
 function SummaryCard({ label, value, tone }: { label: string; value: number; tone: string }) {
   const color = tone === "expense" ? "text-red-600" : tone === "profit" ? "text-emerald-600" : "text-brand-navy";
-  return <article className="rounded-lg border border-slate-200 bg-white p-5"><p className="text-sm text-slate-500">{label}</p><p className={`mt-3 text-2xl font-bold ${color}`}>{formatMoney(value)}</p></article>;
+  return <article className="rounded-lg border border-slate-200 bg-white p-4 sm:p-5"><p className="text-sm text-slate-500">{label}</p><p className={`mt-3 break-words text-xl font-bold sm:text-2xl ${color}`}>{formatMoney(value)}</p></article>;
 }
 
 function CategoryBox({ title, items }: { title: string; items: CategorySummary[] }) {
@@ -158,11 +158,15 @@ function TabButton({ active, children, onClick }: { active: boolean; children: R
 }
 
 function RevenueTable({ revenues, onEdit, onDelete }: { revenues: Revenue[]; onEdit: (item: Revenue) => void; onDelete: (item: Revenue) => void }) {
-  return <table className="w-full text-left text-sm"><thead className="bg-slate-50 text-xs text-slate-500"><tr><Th>날짜</Th><Th>카테고리</Th><Th>고객명</Th><Th>금액</Th><Th>결제 방식</Th><Th>등록 방식</Th><Th>메모</Th><Th>관리</Th></tr></thead><tbody>{revenues.map((item) => <tr className="border-t border-slate-100" key={item.id}><Td>{item.date.replace(/-/g, ".")}</Td><Td>{item.category}</Td><Td>{item.customerName ?? "-"}</Td><Td>{formatMoney(item.amount)}</Td><Td>{item.paymentMethod ?? "-"}</Td><Td>{item.sourceType === "CUSTOMER_PAYMENT" ? "자동" : "수동"}</Td><Td>{item.memo ?? "-"}</Td><Td><ActionButtons onDelete={() => onDelete(item)} onEdit={() => onEdit(item)} /></Td></tr>)}</tbody></table>;
+  return <><div className="hidden overflow-x-auto md:block"><table className="min-w-[920px] w-full text-left text-sm"><thead className="bg-slate-50 text-xs text-slate-500"><tr><Th>날짜</Th><Th>카테고리</Th><Th>고객명</Th><Th>금액</Th><Th>결제 방식</Th><Th>등록 방식</Th><Th>메모</Th><Th>관리</Th></tr></thead><tbody>{revenues.map((item) => <tr className="border-t border-slate-100" key={item.id}><Td>{item.date.replace(/-/g, ".")}</Td><Td>{item.category}</Td><Td>{item.customerName ?? "-"}</Td><Td>{formatMoney(item.amount)}</Td><Td>{item.paymentMethod ?? "-"}</Td><Td>{item.sourceType === "CUSTOMER_PAYMENT" ? "자동" : "수동"}</Td><Td>{item.memo ?? "-"}</Td><Td><ActionButtons onDelete={() => onDelete(item)} onEdit={() => onEdit(item)} /></Td></tr>)}</tbody></table></div><div className="md:hidden">{revenues.map((item) => <FinanceListCard key={item.id} title={item.customerName ?? item.category} subtitle={`${item.date.replace(/-/g, ".")} · ${item.category}`} amount={formatMoney(item.amount)} meta={`${item.paymentMethod ?? "-"} · ${item.sourceType === "CUSTOMER_PAYMENT" ? "자동" : "수동"}`} memo={item.memo} />)}</div></>;
 }
 
 function ExpenseTable({ expenses, onEdit, onDelete }: { expenses: Expense[]; onEdit: (item: Expense) => void; onDelete: (item: Expense) => void }) {
-  return <table className="w-full text-left text-sm"><thead className="bg-slate-50 text-xs text-slate-500"><tr><Th>날짜</Th><Th>카테고리</Th><Th>금액</Th><Th>거래처/구매처</Th><Th>메모</Th><Th>관리</Th></tr></thead><tbody>{expenses.map((item) => <tr className="border-t border-slate-100" key={item.id}><Td>{item.date.replace(/-/g, ".")}</Td><Td>{item.category}</Td><Td>{formatMoney(item.amount)}</Td><Td>{item.vendor ?? "-"}</Td><Td>{item.memo ?? "-"}</Td><Td><ActionButtons onDelete={() => onDelete(item)} onEdit={() => onEdit(item)} /></Td></tr>)}</tbody></table>;
+  return <><div className="hidden overflow-x-auto md:block"><table className="min-w-[720px] w-full text-left text-sm"><thead className="bg-slate-50 text-xs text-slate-500"><tr><Th>날짜</Th><Th>카테고리</Th><Th>금액</Th><Th>거래처/구매처</Th><Th>메모</Th><Th>관리</Th></tr></thead><tbody>{expenses.map((item) => <tr className="border-t border-slate-100" key={item.id}><Td>{item.date.replace(/-/g, ".")}</Td><Td>{item.category}</Td><Td>{formatMoney(item.amount)}</Td><Td>{item.vendor ?? "-"}</Td><Td>{item.memo ?? "-"}</Td><Td><ActionButtons onDelete={() => onDelete(item)} onEdit={() => onEdit(item)} /></Td></tr>)}</tbody></table></div><div className="md:hidden">{expenses.map((item) => <FinanceListCard key={item.id} title={item.category} subtitle={`${item.date.replace(/-/g, ".")} · ${item.vendor ?? "-"}`} amount={formatMoney(item.amount)} meta="비용" memo={item.memo} />)}</div></>;
+}
+
+function FinanceListCard({ amount, memo, meta, subtitle, title }: { amount: string; memo?: string | null; meta: string; subtitle: string; title: string }) {
+  return <article className="border-b border-slate-100 p-4 last:border-b-0"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="truncate font-bold text-brand-navy">{title}</p><p className="mt-1 text-sm text-slate-500">{subtitle}</p></div><strong className="shrink-0 text-brand-navy">{amount}</strong></div><p className="mt-3 text-sm text-slate-600">{meta}</p>{memo ? <p className="mt-2 line-clamp-2 text-sm text-slate-500">{memo}</p> : null}</article>;
 }
 
 function ActionButtons({ onEdit, onDelete }: { onEdit: () => void; onDelete: () => void }) {
@@ -190,7 +194,7 @@ function ExpenseModal({ expense, onClose, onSaved }: { expense: Expense; onClose
 }
 
 function Modal({ title, error, children, onClose, onSubmit }: { title: string; error: string; children: React.ReactNode; onClose: () => void; onSubmit: (event: FormEvent) => void }) {
-  return <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/35 px-4"><form className="w-full max-w-lg rounded-lg bg-white p-6 shadow-panel" onSubmit={onSubmit}><h2 className="text-lg font-bold text-brand-navy">{title}</h2>{error && <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>}<div className="mt-5 grid grid-cols-2 gap-4">{children}</div><div className="mt-6 flex justify-end gap-2"><button className="rounded-lg border border-slate-200 px-4 py-2 text-sm" onClick={onClose} type="button">취소</button><button className="rounded-lg bg-brand-blue px-4 py-2 text-sm font-semibold text-white">저장</button></div></form></div>;
+  return <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-slate-900/35 px-4 py-6"><form className="w-full max-w-lg rounded-lg bg-white p-5 shadow-panel sm:p-6" onSubmit={onSubmit}><h2 className="text-lg font-bold text-brand-navy">{title}</h2>{error && <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>}<div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">{children}</div><div className="mt-6 flex justify-end gap-2"><button className="rounded-lg border border-slate-200 px-4 py-2 text-sm" onClick={onClose} type="button">취소</button><button className="rounded-lg bg-brand-blue px-4 py-2 text-sm font-semibold text-white">저장</button></div></form></div>;
 }
 
 function Input({ label, value, onChange, type = "text" }: { label: string; value: string; type?: string; onChange: (value: string) => void }) {

@@ -31,8 +31,8 @@ export function LoginPage() {
   }
 
   return (
-    <main className="grid min-h-screen place-items-center bg-brand-soft px-6">
-      <section className="w-full max-w-md rounded-lg bg-white p-8 shadow-panel">
+    <main className="grid min-h-screen place-items-center bg-brand-soft px-4 py-8 sm:px-6">
+      <section className="w-full max-w-md rounded-lg bg-white p-5 shadow-panel sm:p-8">
         <div className="mb-8">
           <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-brand-cyan/10">
             <Sparkles className="h-6 w-6 text-brand-cyan" />
