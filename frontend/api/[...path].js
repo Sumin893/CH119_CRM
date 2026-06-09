@@ -1,6 +1,12 @@
 const backendUrl = process.env.API_PROXY_TARGET ?? process.env.VITE_API_BASE_URL;
 
 async function readBody(request) {
+  if (request.body !== undefined) {
+    if (Buffer.isBuffer(request.body)) return request.body;
+    if (typeof request.body === "string") return Buffer.from(request.body);
+    return Buffer.from(JSON.stringify(request.body));
+  }
+
   const chunks = [];
 
   for await (const chunk of request) {
