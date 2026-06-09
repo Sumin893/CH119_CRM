@@ -16,7 +16,19 @@ export const app = express();
 
 validateEncryptionConfig();
 
-app.use(cors({ origin: env.frontendOrigin, credentials: true }));
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || env.frontendOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error("CORS origin is not allowed."));
+    },
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.set("trust proxy", 1);
 
