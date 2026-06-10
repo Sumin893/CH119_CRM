@@ -8,7 +8,7 @@ import { useAuth } from "./useAuth";
 export function LoginPage() {
   const { admin, login } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("admin");
+  const [email, setEmail] = useState("ch119");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);

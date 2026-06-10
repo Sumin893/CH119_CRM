@@ -11,6 +11,7 @@
     "db:deploy": "prisma migrate deploy",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
+    "admin:replace": "tsx prisma/replace-admin.ts",
     "db:studio": "prisma studio",
     "db:reset": "node -e \"console.log('MySQL 데이터 삭제 위험이 있어 db:reset은 비활성화했습니다. 필요 시 직접 Prisma 명령을 확인 후 실행하세요.')\""
   },
