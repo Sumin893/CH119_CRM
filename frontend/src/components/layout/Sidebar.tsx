@@ -1,11 +1,11 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { Sparkles } from "lucide-react";
 import { menuItems } from "./menu";
 
 export function Sidebar() {
   return (
     <aside className="hidden w-64 shrink-0 border-r border-slate-200 bg-white px-4 py-6 lg:block">
-      <div className="mb-8 flex items-center gap-3 px-2">
+      <Link className="mb-8 flex items-center gap-3 rounded-lg px-2" to="/">
         <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-brand-cyan/10">
           <Sparkles className="h-5 w-5 text-brand-cyan" />
         </div>
@@ -13,7 +13,7 @@ export function Sidebar() {
           <p className="text-lg font-bold text-brand-navy">HomeClean119</p>
           <p className="text-xs text-slate-500">Cleaning CRM</p>
         </div>
-      </div>
+      </Link>
       <nav className="space-y-1">
         {menuItems.map((item) => (
           <NavLink

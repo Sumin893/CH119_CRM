@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import { Menu, Sparkles, X } from "lucide-react";
 import { useState } from "react";
 import { Header } from "./Header";
@@ -14,12 +14,12 @@ export function AdminLayout() {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4 lg:hidden">
-          <div className="flex min-w-0 items-center gap-2">
+          <Link className="flex min-w-0 items-center gap-2 rounded-lg" to="/">
             <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-brand-cyan/10">
               <Sparkles className="h-5 w-5 text-brand-cyan" />
             </div>
             <p className="truncate text-base font-bold text-brand-navy">HomeClean119</p>
-          </div>
+          </Link>
           <button
             aria-label="메뉴 열기"
             className="grid h-10 w-10 place-items-center rounded-lg border border-slate-200 text-brand-navy"
@@ -44,7 +44,11 @@ export function AdminLayout() {
           />
           <aside className="relative h-full w-[min(82vw,320px)] bg-white px-4 py-5 shadow-panel">
             <div className="mb-6 flex items-center justify-between">
-              <div className="flex min-w-0 items-center gap-3">
+              <Link
+                className="flex min-w-0 items-center gap-3 rounded-lg"
+                onClick={() => setIsMobileMenuOpen(false)}
+                to="/"
+              >
                 <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-brand-cyan/10">
                   <Sparkles className="h-5 w-5 text-brand-cyan" />
                 </div>
@@ -52,7 +56,7 @@ export function AdminLayout() {
                   <p className="truncate font-bold text-brand-navy">HomeClean119</p>
                   <p className="text-xs text-slate-500">Cleaning CRM</p>
                 </div>
-              </div>
+              </Link>
               <button
                 aria-label="메뉴 닫기"
                 className="grid h-10 w-10 place-items-center rounded-lg border border-slate-200"
