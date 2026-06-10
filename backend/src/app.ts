@@ -16,31 +16,39 @@ export const app = express();
 
 validateEncryptionConfig();
 
-app.use(
-  cors({
-    origin(origin, callback) {
-      if (!origin || env.frontendOrigins.includes(origin)) {
-        callback(null, true);
-        return;
-      }
-
-      callback(new Error("CORS origin is not allowed."));
-    },
-    credentials: true,
-  }),
-);
-app.use(express.json());
 app.set("trust proxy", 1);
+
+const corsOptions = {
+  origin(origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+    if (!origin || env.frontendOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error(`CORS origin is not allowed: ${origin}`));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
+
+app.use(express.json());
 
 app.use(
   session({
+    name: "connect.sid",
     secret: env.sessionSecret,
     resave: false,
     saveUninitialized: false,
+    proxy: true,
     cookie: {
       httpOnly: true,
-      secure: env.cookieSecure,
-      sameSite: env.cookieSecure ? "none" : "lax",
+      secure: true,
+      sameSite: "none",
+      maxAge: 1000 * 60 * 60 * 24,
     },
   }),
 );
@@ -52,5 +60,6 @@ app.use("/api/revenues", revenueRouter);
 app.use("/api/expenses", expenseRouter);
 app.use("/api/finance", financeRouter);
 app.use("/api/stats", statsRouter);
+
 app.use(notFound);
 app.use(errorHandler);
