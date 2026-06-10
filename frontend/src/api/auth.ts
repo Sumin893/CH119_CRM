@@ -14,7 +14,10 @@ export function loginAdmin(email: string, password: string) {
 }
 
 export function logoutAdmin() {
-  return api<{ message: string }>("/api/auth/logout", { method: "POST" });
+  return api<{ message: string }>("/api/auth/logout", {
+    method: "POST",
+    body: JSON.stringify({}),
+  });
 }
 
 export function getMe() {
