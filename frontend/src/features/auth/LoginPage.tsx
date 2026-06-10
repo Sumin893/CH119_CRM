@@ -8,7 +8,7 @@ import { useAuth } from "./useAuth";
 export function LoginPage() {
   const { admin, login } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("admin@homeclean119.kr");
+  const [email, setEmail] = useState("admin");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,7 +42,7 @@ export function LoginPage() {
         </div>
 
         <form className="space-y-5" onSubmit={onSubmit}>
-          <TextField label="이메일" value={email} onChange={setEmail} />
+          <TextField label="아이디" value={email} onChange={setEmail} />
           <TextField label="비밀번호" type="password" value={password} onChange={setPassword} />
           {error && <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>}
           <Button full isLoading={isSubmitting}>로그인</Button>
