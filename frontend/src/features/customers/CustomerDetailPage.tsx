@@ -62,6 +62,7 @@ export function CustomerDetailPage() {
           ["잔금", formatMoney(customer.balance)],
           ["결제 방식", customer.paymentMethod],
           ["결제 상태", <StatusBadge value={customer.paymentStatus} />],
+          ["계산서 발행여부", customer.invoiceIssued],
         ]} />
         <InfoCard title="메모" items={[["작업 메모", customer.memo], ["특이사항", customer.specialNote]]} />
         <InfoCard title="재방문 정보" items={[["재방문 예정일", formatDate(customer.revisitDate)]]} />

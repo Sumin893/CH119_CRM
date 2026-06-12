@@ -34,6 +34,7 @@ db.exec(`
     "balance" INTEGER,
     "paymentMethod" TEXT,
     "paymentStatus" TEXT NOT NULL,
+    "invoiceIssued" TEXT,
     "customerStatus" TEXT NOT NULL,
     "memo" TEXT,
     "specialNote" TEXT,

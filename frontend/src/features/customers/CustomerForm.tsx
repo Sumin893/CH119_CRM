@@ -3,6 +3,7 @@ import { Check, ChevronDown } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import {
   customerStatuses,
+  invoiceIssuedOptions,
   paymentMethods,
   paymentStatuses,
   productCategories,
@@ -48,9 +49,29 @@ export function CustomerForm(props: CustomerFormProps) {
       return;
     }
 
-    await props.onSubmit(values).catch((err) => {
+    const normalizedValues: CustomerFormValues = {
+      ...values,
+      estimateRequestDate: null,
+      workEndTime: "",
+      estimatePrice: null,
+      finalPrice: values.finalPrice ?? values.estimatePrice,
+      deposit: null,
+      balance: null,
+    };
+
+    await props.onSubmit(normalizedValues).catch((err) => {
       setError(err instanceof Error ? err.message : "저장에 실패했습니다.");
     });
+  }
+
+  function setAmount(value: number | null) {
+    setValues((current) => ({
+      ...current,
+      estimatePrice: null,
+      finalPrice: value,
+      deposit: null,
+      balance: null,
+    }));
   }
 
   return (
@@ -61,24 +82,20 @@ export function CustomerForm(props: CustomerFormProps) {
         <Input label="전화번호 *" value={values.phone} onChange={(v) => setField("phone", v)} />
         <Input label="작업주소 *" value={values.address} onChange={(v) => setField("address", v)} />
       </Section>
-      <Section title="작업 정보">
+      <Section title="작업 정보" columns={4}>
         <OptionPicker label="의뢰 제품 *" options={productCategories} value={values.productCategory} onChange={setCategory} />
         <OptionPicker label="제품 상세 유형 *" options={types} value={values.productType} onChange={(v) => setField("productType", v)} />
         <Input label="제품 브랜드" value={values.productBrand ?? ""} onChange={(v) => setField("productBrand", v)} />
         <NumberInput label="제품 대수" value={values.productCount} onChange={(v) => setField("productCount", v)} />
-        <DateInput label="견적서 요청 날짜" value={values.estimateRequestDate} onChange={(v) => setField("estimateRequestDate", v)} />
         <DateInput label="작업 날짜" value={values.workDate} onChange={(v) => setField("workDate", v)} />
-        <TimeSelect label="작업 시작 시간" value={values.workStartTime ?? ""} onChange={(v) => setField("workStartTime", v)} />
-        <TimeSelect label="작업 종료 시간" value={values.workEndTime ?? ""} onChange={(v) => setField("workEndTime", v)} />
+        <TimeSelect label="작업 시간" value={values.workStartTime ?? ""} onChange={(v) => setField("workStartTime", v)} />
         <OptionPicker label="고객 상태 *" options={customerStatuses} value={values.customerStatus} onChange={(v) => setField("customerStatus", v)} />
       </Section>
       <Section title="결제 정보">
-        <NumberInput label="견적 가격" value={values.estimatePrice} onChange={(v) => setField("estimatePrice", v)} />
-        <NumberInput label="최종 결제 금액" value={values.finalPrice} onChange={(v) => setField("finalPrice", v)} />
-        <NumberInput label="예약금" value={values.deposit} onChange={(v) => setField("deposit", v)} />
-        <NumberInput label="잔금" value={values.balance} onChange={(v) => setField("balance", v)} />
+        <NumberInput label="금액" value={values.finalPrice ?? values.estimatePrice} align="right" onChange={setAmount} />
         <OptionPicker label="결제 방식" options={["선택 안 함", ...paymentMethods]} value={values.paymentMethod || "선택 안 함"} onChange={(v) => setField("paymentMethod", v === "선택 안 함" ? "" : v)} />
         <OptionPicker label="결제 상태 *" options={paymentStatuses} value={values.paymentStatus} onChange={(v) => setField("paymentStatus", v)} />
+        <OptionPicker label="계산서 발행여부" options={invoiceIssuedOptions} value={values.invoiceIssued || "아니오"} onChange={(v) => setField("invoiceIssued", v)} />
       </Section>
       <Section title="메모" columns={2}>
         <Textarea label="작업 메모" value={values.memo ?? ""} onChange={(v) => setField("memo", v)} />
@@ -96,10 +113,16 @@ export function CustomerForm(props: CustomerFormProps) {
 }
 
 function Section({ title, children, columns = 3 }: SectionProps) {
+  const gridClass = {
+    2: "grid-cols-1 md:grid-cols-2",
+    3: "grid-cols-1 md:grid-cols-3",
+    4: "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4",
+  }[columns];
+
   return (
     <section className="rounded-lg border border-slate-200 bg-white p-5">
       <h2 className="mb-4 text-base font-bold text-brand-navy">{title}</h2>
-      <div className={`grid gap-4 ${columns === 2 ? "grid-cols-2" : "grid-cols-3"}`}>{children}</div>
+      <div className={`grid gap-4 ${gridClass}`}>{children}</div>
     </section>
   );
 }
@@ -107,14 +130,14 @@ function Section({ title, children, columns = 3 }: SectionProps) {
 type SectionProps = {
   title: string;
   children: React.ReactNode;
-  columns?: 2 | 3;
+  columns?: 2 | 3 | 4;
 };
 
-function Input({ label, value, onChange, type = "text" }: InputProps) {
+function Input({ label, value, onChange, type = "text", align = "left" }: InputProps) {
   return (
     <label className="block">
       <span className="mb-2 block text-sm font-medium text-slate-700">{label}</span>
-      <input className="h-10 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-brand-cyan" type={type} value={value} onChange={(event) => onChange(event.target.value)} />
+      <input className={`h-10 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-brand-cyan ${align === "right" ? "text-right" : ""}`} type={type} value={value} onChange={(event) => onChange(event.target.value)} />
     </label>
   );
 }
@@ -123,16 +146,18 @@ type InputProps = {
   label: string;
   value: string;
   type?: string;
+  align?: "left" | "right";
   onChange: (value: string) => void;
 };
 
-function NumberInput({ label, value, onChange }: NumberInputProps) {
-  return <Input label={label} value={value ? String(value) : ""} onChange={(v) => onChange(v ? Number(v.replace(/\D/g, "")) : null)} />;
+function NumberInput({ label, value, onChange, align }: NumberInputProps) {
+  return <Input label={label} value={formatNumberInput(value)} align={align} onChange={(v) => onChange(v ? Number(v.replace(/\D/g, "")) : null)} />;
 }
 
 type NumberInputProps = {
   label: string;
   value: number | null;
+  align?: "left" | "right";
   onChange: (value: number | null) => void;
 };
 
@@ -264,26 +289,28 @@ function Textarea({ label, value, onChange }: InputProps) {
 
 const hours = Array.from({ length: 13 }, (_, index) => String(index).padStart(2, "0"));
 const minutes = ["00", "30"];
+const meridiems = ["오전", "오후"];
 
 function TimeSelect({ label, value, onChange }: TimeSelectProps) {
-  const [hour = "", minute = ""] = value.split(":");
+  const { meridiem, hour, minute } = parseTimeValue(value);
 
-  function update(nextHour: string, nextMinute: string) {
-    if (!nextHour && !nextMinute) {
+  function update(nextMeridiem: string, nextHour: string, nextMinute: string) {
+    if (!nextMeridiem && !nextHour && !nextMinute) {
       onChange("");
       return;
     }
 
-    onChange(`${nextHour || "00"}:${nextMinute || "00"}`);
+    onChange(toStoredTime(nextMeridiem || "오전", nextHour || "00", nextMinute || "00"));
   }
 
   return (
     <div className="block">
       <span className="mb-2 block text-sm font-medium text-slate-700">{label}</span>
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
-        <TimePart label="시" options={hours} value={hour} onChange={(next) => update(next, minute)} />
+      <div className="grid grid-cols-[1fr_1fr_auto_1fr] items-center gap-2">
+        <TimePart label="" options={meridiems} value={meridiem} onChange={(next) => update(next, hour, minute)} />
+        <TimePart label="시" options={hours} value={hour} onChange={(next) => update(meridiem, next, minute)} />
         <span className="text-sm font-semibold text-slate-400">:</span>
-        <TimePart label="분" options={minutes} value={minute} onChange={(next) => update(hour, next)} />
+        <TimePart label="분" options={minutes} value={minute} onChange={(next) => update(meridiem, hour, next)} />
       </div>
     </div>
   );
@@ -294,6 +321,37 @@ type TimeSelectProps = {
   value: string;
   onChange: (value: string) => void;
 };
+
+function formatNumberInput(value: number | null) {
+  if (value === null) return "";
+
+  return value.toLocaleString("ko-KR");
+}
+
+function parseTimeValue(value: string) {
+  const [rawHour = "", minute = ""] = value.split(":");
+  const numericHour = Number(rawHour);
+
+  if (!rawHour || Number.isNaN(numericHour)) return { meridiem: "", hour: "", minute };
+
+  const meridiem = numericHour >= 12 ? "오후" : "오전";
+  const displayHour = meridiem === "오후" && numericHour > 12 ? numericHour - 12 : numericHour;
+
+  return {
+    meridiem,
+    hour: String(displayHour).padStart(2, "0"),
+    minute,
+  };
+}
+
+function toStoredTime(meridiem: string, hour: string, minute: string) {
+  const numericHour = Number(hour);
+  const storedHour = meridiem === "오후"
+    ? numericHour === 12 ? 12 : numericHour + 12
+    : numericHour === 12 ? 0 : numericHour;
+
+  return `${String(storedHour).padStart(2, "0")}:${minute}`;
+}
 
 function TimePart({ label, options, value, onChange }: TimePartProps) {
   const [isOpen, setIsOpen] = useState(false);

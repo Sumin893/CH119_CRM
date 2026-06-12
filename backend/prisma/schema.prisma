@@ -35,6 +35,7 @@ model Customer {
   balance             Int?
   paymentMethod       String?  @db.VarChar(50)
   paymentStatus       String   @db.VarChar(50)
+  invoiceIssued       String?  @db.VarChar(10)
   customerStatus      String   @db.VarChar(50)
   memo                String?  @db.Text
   specialNote         String?  @db.Text

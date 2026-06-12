@@ -17,6 +17,7 @@ export type Customer = {
   balance: number | null;
   paymentMethod: string | null;
   paymentStatus: string;
+  invoiceIssued: string | null;
   customerStatus: string;
   memo: string | null;
   specialNote: string | null;

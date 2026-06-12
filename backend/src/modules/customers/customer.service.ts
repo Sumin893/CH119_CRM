@@ -37,6 +37,7 @@ function baseData(body: CustomerBody) {
     balance: toOptionalNumber(body.balance),
     paymentMethod: toOptionalString(body.paymentMethod),
     paymentStatus: normalizePaymentStatus(String(body.paymentStatus ?? "")),
+    invoiceIssued: toOptionalString(body.invoiceIssued),
     customerStatus: String(body.customerStatus ?? ""),
     memo: toOptionalString(body.memo),
     specialNote: toOptionalString(body.specialNote),
