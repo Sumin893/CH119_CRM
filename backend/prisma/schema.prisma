@@ -21,6 +21,8 @@ model Customer {
   phoneEncrypted      String   @db.Text
   phoneHash           String   @db.VarChar(64)
   addressEncrypted    String   @db.Text
+  leadSource          String   @default("당근") @db.VarChar(50)
+  referralName        String?  @db.VarChar(20)
   productCategory     String   @db.VarChar(50)
   productType         String   @db.VarChar(100)
   productBrand        String?  @db.VarChar(100)
@@ -45,6 +47,7 @@ model Customer {
   revenues            Revenue[]
 
   @@index([phoneHash])
+  @@index([leadSource])
   @@index([productCategory])
   @@index([customerStatus])
   @@index([paymentStatus])

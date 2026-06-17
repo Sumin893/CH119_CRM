@@ -13,12 +13,16 @@ export const paymentStatuses = ["결제전", "예약금결제", "결제완료", 
 
 export const invoiceIssuedOptions = ["예", "아니오"];
 
+export const leadSourceOptions = ["당근", "지인소개", "네이버 플레이스", "현수막", "명함"];
+
 export const customerStatuses = ["예약중", "예약 확정", "작업 완료", "재방문 예정", "취소"];
 
 export const emptyCustomerForm = {
   name: "",
   phone: "",
   address: "",
+  leadSource: "당근",
+  referralName: "",
   productCategory: "에어컨",
   productType: "벽걸이",
   productBrand: "",

@@ -20,6 +20,8 @@ db.exec(`
     "phoneEncrypted" TEXT NOT NULL,
     "phoneHash" TEXT NOT NULL,
     "addressEncrypted" TEXT NOT NULL,
+    "leadSource" TEXT NOT NULL DEFAULT '당근',
+    "referralName" TEXT,
     "productCategory" TEXT NOT NULL,
     "productType" TEXT NOT NULL,
     "productBrand" TEXT,
@@ -44,6 +46,7 @@ db.exec(`
   );
 
   CREATE INDEX IF NOT EXISTS "Customer_phoneHash_idx" ON "Customer"("phoneHash");
+  CREATE INDEX IF NOT EXISTS "Customer_leadSource_idx" ON "Customer"("leadSource");
   CREATE INDEX IF NOT EXISTS "Customer_productCategory_idx" ON "Customer"("productCategory");
   CREATE INDEX IF NOT EXISTS "Customer_customerStatus_idx" ON "Customer"("customerStatus");
   CREATE INDEX IF NOT EXISTS "Customer_paymentStatus_idx" ON "Customer"("paymentStatus");

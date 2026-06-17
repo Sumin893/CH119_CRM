@@ -1,9 +1,10 @@
-import { customerStatuses, normalizePaymentStatus, paymentStatuses, productCategories } from "./customer.constants.js";
+import { customerStatuses, leadSourceOptions, normalizePaymentStatus, paymentStatuses, productCategories } from "./customer.constants.js";
 
 const requiredFields = [
   "name",
   "phone",
   "address",
+  "leadSource",
   "productCategory",
   "productType",
   "customerStatus",
@@ -17,6 +18,14 @@ export function validateRequired(body: Record<string, unknown>) {
 
   if (!productCategories.includes(String(body.productCategory))) {
     return "의뢰 제품 값이 올바르지 않습니다.";
+  }
+
+  if (!leadSourceOptions.includes(String(body.leadSource))) {
+    return "유입 경로 값이 올바르지 않습니다.";
+  }
+
+  if (String(body.leadSource) === "지인소개" && !/^[가-힣]{2,4}$/.test(String(body.referralName ?? ""))) {
+    return "지인 이름은 한글 2~4글자로 입력해주세요.";
   }
 
   if (!customerStatuses.includes(String(body.customerStatus))) {

@@ -4,6 +4,7 @@ import { Button } from "../../components/ui/Button";
 import {
   customerStatuses,
   invoiceIssuedOptions,
+  leadSourceOptions,
   paymentMethods,
   paymentStatuses,
   productCategories,
@@ -40,17 +41,31 @@ export function CustomerForm(props: CustomerFormProps) {
     }));
   }
 
+  function setLeadSource(value: string) {
+    setValues((current) => ({
+      ...current,
+      leadSource: value,
+      referralName: value === "지인소개" ? current.referralName : "",
+    }));
+  }
+
   async function submit(event: FormEvent) {
     event.preventDefault();
     setError("");
 
-    if (!values.name || !values.phone || !values.address || !values.productType) {
+    if (!values.name || !values.phone || !values.address || !values.leadSource || !values.productType) {
       setError("필수 항목을 입력해주세요.");
+      return;
+    }
+
+    if (values.leadSource === "지인소개" && !/^[가-힣]{2,4}$/.test(values.referralName ?? "")) {
+      setError("지인 이름은 한글 2~4글자로 입력해주세요.");
       return;
     }
 
     const normalizedValues: CustomerFormValues = {
       ...values,
+      referralName: values.leadSource === "지인소개" ? values.referralName : "",
       estimateRequestDate: null,
       workEndTime: "",
       estimatePrice: null,
@@ -77,9 +92,15 @@ export function CustomerForm(props: CustomerFormProps) {
   return (
     <form className="space-y-6" onSubmit={submit}>
       {error && <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>}
-      <Section title="기본 정보">
+      <Section title="기본 정보" columns={4}>
         <Input label="이름 또는 닉네임 *" value={values.name} onChange={(v) => setField("name", v)} />
         <Input label="전화번호 *" value={values.phone} onChange={(v) => setField("phone", v)} />
+        <LeadSourceField
+          leadSource={values.leadSource}
+          referralName={values.referralName ?? ""}
+          onLeadSourceChange={setLeadSource}
+          onReferralNameChange={(v) => setField("referralName", v.replace(/[^가-힣]/g, "").slice(0, 4))}
+        />
         <Input label="작업주소 *" value={values.address} onChange={(v) => setField("address", v)} />
       </Section>
       <Section title="작업 정보" columns={4}>
@@ -133,11 +154,11 @@ type SectionProps = {
   columns?: 2 | 3 | 4;
 };
 
-function Input({ label, value, onChange, type = "text", align = "left" }: InputProps) {
+function Input({ label, value, onChange, type = "text", align = "left", maxLength }: InputProps) {
   return (
     <label className="block">
       <span className="mb-2 block text-sm font-medium text-slate-700">{label}</span>
-      <input className={`h-10 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-brand-cyan ${align === "right" ? "text-right" : ""}`} type={type} value={value} onChange={(event) => onChange(event.target.value)} />
+      <input className={`h-10 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-brand-cyan ${align === "right" ? "text-right" : ""}`} maxLength={maxLength} type={type} value={value} onChange={(event) => onChange(event.target.value)} />
     </label>
   );
 }
@@ -147,6 +168,7 @@ type InputProps = {
   value: string;
   type?: string;
   align?: "left" | "right";
+  maxLength?: number;
   onChange: (value: string) => void;
 };
 
@@ -169,6 +191,29 @@ type DateInputProps = {
   label: string;
   value: string | null;
   onChange: (value: string | null) => void;
+};
+
+function LeadSourceField({ leadSource, referralName, onLeadSourceChange, onReferralNameChange }: LeadSourceFieldProps) {
+  return (
+    <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(96px,0.8fr)]">
+      <OptionPicker label="유입 경로 *" options={leadSourceOptions} value={leadSource} onChange={onLeadSourceChange} />
+      {leadSource === "지인소개" && (
+        <Input
+          label="지인 이름 *"
+          maxLength={4}
+          value={referralName}
+          onChange={onReferralNameChange}
+        />
+      )}
+    </div>
+  );
+}
+
+type LeadSourceFieldProps = {
+  leadSource: string;
+  referralName: string;
+  onLeadSourceChange: (value: string) => void;
+  onReferralNameChange: (value: string) => void;
 };
 
 function OptionPicker({ label, options, value, onChange }: SelectProps) {
@@ -250,6 +295,11 @@ function dotTone(option: string, active: boolean) {
     예약금결제: "bg-lime-400",
     결제완료: "bg-emerald-400",
     환불: "bg-slate-400",
+    당근: "bg-orange-400",
+    지인소개: "bg-pink-400",
+    "네이버 플레이스": "bg-green-400",
+    현수막: "bg-violet-400",
+    명함: "bg-indigo-400",
   };
 
   return tones[option] ?? "bg-brand-cyan";
@@ -266,6 +316,11 @@ function activeOptionTone(option: string) {
     예약금결제: "bg-lime-100 text-lime-800 ring-1 ring-lime-300",
     결제완료: "bg-emerald-100 text-emerald-800 ring-1 ring-emerald-300",
     환불: "bg-slate-200 text-slate-700 ring-1 ring-slate-300",
+    당근: "bg-orange-100 text-orange-800 ring-1 ring-orange-300",
+    지인소개: "bg-pink-100 text-pink-800 ring-1 ring-pink-300",
+    "네이버 플레이스": "bg-green-100 text-green-800 ring-1 ring-green-300",
+    현수막: "bg-violet-100 text-violet-800 ring-1 ring-violet-300",
+    명함: "bg-indigo-100 text-indigo-800 ring-1 ring-indigo-300",
   };
 
   return tones[option] ?? "bg-white text-brand-navy ring-1 ring-brand-cyan/40";

@@ -23,6 +23,8 @@ function encryptedFields(body: CustomerBody) {
 function baseData(body: CustomerBody) {
   return {
     name: String(body.name ?? "").trim(),
+    leadSource: String(body.leadSource ?? ""),
+    referralName: String(body.leadSource ?? "") === "지인소개" ? toOptionalString(body.referralName) : null,
     productCategory: String(body.productCategory ?? ""),
     productType: String(body.productType ?? ""),
     productBrand: toOptionalString(body.productBrand),

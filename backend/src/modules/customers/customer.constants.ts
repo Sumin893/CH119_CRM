@@ -13,3 +13,5 @@ export function normalizePaymentStatus(status: string) {
 }
 
 export const customerStatuses = ["예약중", "예약 확정", "작업 완료", "재방문 예정", "취소"];
+
+export const leadSourceOptions = ["당근", "지인소개", "네이버 플레이스", "현수막", "명함"];

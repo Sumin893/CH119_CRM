@@ -3,6 +3,8 @@ export type Customer = {
   name: string;
   phone: string;
   address: string;
+  leadSource: string;
+  referralName: string | null;
   productCategory: string;
   productType: string;
   productBrand: string | null;
