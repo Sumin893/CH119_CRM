@@ -45,7 +45,7 @@ export function CustomerForm(props: CustomerFormProps) {
     setValues((current) => ({
       ...current,
       leadSource: value,
-      referralName: value === "지인소개" ? current.referralName : "",
+      referralName: isReferralLeadSource(value) ? current.referralName : "",
     }));
   }
 
@@ -58,14 +58,14 @@ export function CustomerForm(props: CustomerFormProps) {
       return;
     }
 
-    if (values.leadSource === "지인소개" && !/^[가-힣]{2,4}$/.test(values.referralName ?? "")) {
-      setError("지인 이름은 한글 2~4글자로 입력해주세요.");
+    if (isReferralLeadSource(values.leadSource) && !String(values.referralName ?? "").trim()) {
+      setError("지인 이름을 입력해주세요.");
       return;
     }
 
     const normalizedValues: CustomerFormValues = {
       ...values,
-      referralName: values.leadSource === "지인소개" ? values.referralName : "",
+      referralName: isReferralLeadSource(values.leadSource) ? values.referralName : "",
       estimateRequestDate: null,
       workEndTime: "",
       estimatePrice: null,
@@ -99,7 +99,7 @@ export function CustomerForm(props: CustomerFormProps) {
           leadSource={values.leadSource}
           referralName={values.referralName ?? ""}
           onLeadSourceChange={setLeadSource}
-          onReferralNameChange={(v) => setField("referralName", v.replace(/[^가-힣]/g, "").slice(0, 4))}
+          onReferralNameChange={(v) => setField("referralName", v)}
         />
         <Input label="작업주소 *" value={values.address} onChange={(v) => setField("address", v)} />
       </Section>
@@ -197,16 +197,19 @@ function LeadSourceField({ leadSource, referralName, onLeadSourceChange, onRefer
   return (
     <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(96px,0.8fr)]">
       <OptionPicker label="유입 경로 *" options={leadSourceOptions} value={leadSource} onChange={onLeadSourceChange} />
-      {leadSource === "지인소개" && (
+      {isReferralLeadSource(leadSource) && (
         <Input
           label="지인 이름 *"
-          maxLength={4}
           value={referralName}
           onChange={onReferralNameChange}
         />
       )}
     </div>
   );
+}
+
+function isReferralLeadSource(leadSource: string) {
+  return leadSource === "지인소개" || leadSource === "지인";
 }
 
 type LeadSourceFieldProps = {
@@ -297,9 +300,11 @@ function dotTone(option: string, active: boolean) {
     환불: "bg-slate-400",
     당근: "bg-orange-400",
     지인소개: "bg-pink-400",
+    지인: "bg-pink-400",
     "네이버 플레이스": "bg-green-400",
     현수막: "bg-violet-400",
     명함: "bg-indigo-400",
+    기타: "bg-slate-400",
   };
 
   return tones[option] ?? "bg-brand-cyan";
@@ -318,9 +323,11 @@ function activeOptionTone(option: string) {
     환불: "bg-slate-200 text-slate-700 ring-1 ring-slate-300",
     당근: "bg-orange-100 text-orange-800 ring-1 ring-orange-300",
     지인소개: "bg-pink-100 text-pink-800 ring-1 ring-pink-300",
+    지인: "bg-pink-100 text-pink-800 ring-1 ring-pink-300",
     "네이버 플레이스": "bg-green-100 text-green-800 ring-1 ring-green-300",
     현수막: "bg-violet-100 text-violet-800 ring-1 ring-violet-300",
     명함: "bg-indigo-100 text-indigo-800 ring-1 ring-indigo-300",
+    기타: "bg-slate-200 text-slate-700 ring-1 ring-slate-300",
   };
 
   return tones[option] ?? "bg-white text-brand-navy ring-1 ring-brand-cyan/40";

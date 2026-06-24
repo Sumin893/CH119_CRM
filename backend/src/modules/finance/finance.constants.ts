@@ -20,6 +20,7 @@ export const expenseCategories = [
   "명함 제작비",
   "블로그/마케팅",
   "플랫폼 수수료",
+  "고객환불(A/S)비용",
   "기타 비용",
 ];
 

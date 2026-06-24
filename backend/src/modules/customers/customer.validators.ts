@@ -24,8 +24,8 @@ export function validateRequired(body: Record<string, unknown>) {
     return "유입 경로 값이 올바르지 않습니다.";
   }
 
-  if (String(body.leadSource) === "지인소개" && !/^[가-힣]{2,4}$/.test(String(body.referralName ?? ""))) {
-    return "지인 이름은 한글 2~4글자로 입력해주세요.";
+  if (isReferralLeadSource(String(body.leadSource)) && !String(body.referralName ?? "").trim()) {
+    return "지인 이름을 입력해주세요.";
   }
 
   if (!customerStatuses.includes(String(body.customerStatus))) {
@@ -37,6 +37,10 @@ export function validateRequired(body: Record<string, unknown>) {
   }
 
   return null;
+}
+
+export function isReferralLeadSource(leadSource: string) {
+  return leadSource === "지인소개" || leadSource === "지인";
 }
 
 export function toOptionalString(value: unknown) {

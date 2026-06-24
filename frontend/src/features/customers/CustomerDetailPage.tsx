@@ -47,7 +47,7 @@ export function CustomerDetailPage() {
         <InfoCard title="기본 정보" items={[
           ["이름", customer.name],
           ["전화번호", customer.phone],
-          ["유입 경로", customer.leadSource === "지인소개" && customer.referralName ? `${customer.leadSource} / ${customer.referralName}` : customer.leadSource],
+          ["유입 경로", (customer.leadSource === "지인소개" || customer.leadSource === "지인") && customer.referralName ? `${customer.leadSource} / ${customer.referralName}` : customer.leadSource],
           ["주소", customer.address],
         ]} />
         <InfoCard title="작업 정보" items={[
