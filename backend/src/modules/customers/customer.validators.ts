@@ -1,4 +1,4 @@
-import { customerStatuses, leadSourceOptions, normalizePaymentStatus, paymentStatuses, productCategories } from "./customer.constants.js";
+import { customerStatuses, leadSourceOptions, normalizeLeadSource, normalizePaymentStatus, paymentStatuses, productCategories } from "./customer.constants.js";
 
 const requiredFields = [
   "name",
@@ -13,6 +13,7 @@ const requiredFields = [
 
 export function validateRequired(body: Record<string, unknown>) {
   const missing = requiredFields.find((field) => !String(body[field] ?? "").trim());
+  const leadSource = normalizeLeadSource(body.leadSource);
 
   if (missing) return "필수 항목을 입력해주세요.";
 
@@ -20,11 +21,11 @@ export function validateRequired(body: Record<string, unknown>) {
     return "의뢰 제품 값이 올바르지 않습니다.";
   }
 
-  if (!leadSourceOptions.includes(String(body.leadSource))) {
+  if (!leadSourceOptions.includes(leadSource)) {
     return "유입 경로 값이 올바르지 않습니다.";
   }
 
-  if (isReferralLeadSource(String(body.leadSource)) && !String(body.referralName ?? "").trim()) {
+  if (isReferralLeadSource(leadSource) && !String(body.referralName ?? "").trim()) {
     return "지인 이름을 입력해주세요.";
   }
 

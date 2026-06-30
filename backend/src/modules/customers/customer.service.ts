@@ -2,7 +2,7 @@ import type { Prisma } from "@prisma/client";
 import { prisma } from "../../config/prisma.js";
 import { encryptText, hashPhone, normalizePhone } from "../../utils/crypto.js";
 import { createOrUpdateRevenueFromCustomerPayment } from "../finance/revenue.service.js";
-import { normalizePaymentStatus } from "./customer.constants.js";
+import { normalizeLeadSource, normalizePaymentStatus } from "./customer.constants.js";
 import { toCustomerResponse } from "./customer.mapper.js";
 import { isReferralLeadSource, toOptionalDate, toOptionalNumber, toOptionalString } from "./customer.validators.js";
 
@@ -21,10 +21,12 @@ function encryptedFields(body: CustomerBody) {
 }
 
 function baseData(body: CustomerBody) {
+  const leadSource = normalizeLeadSource(body.leadSource);
+
   return {
     name: String(body.name ?? "").trim(),
-    leadSource: String(body.leadSource ?? ""),
-    referralName: isReferralLeadSource(String(body.leadSource ?? "")) ? toOptionalString(body.referralName) : null,
+    leadSource,
+    referralName: isReferralLeadSource(leadSource) ? toOptionalString(body.referralName) : null,
     productCategory: String(body.productCategory ?? ""),
     productType: String(body.productType ?? ""),
     productBrand: toOptionalString(body.productBrand),
