@@ -25,7 +25,7 @@ export function validateRequired(body: Record<string, unknown>) {
     return "유입 경로 값이 올바르지 않습니다.";
   }
 
-  if (isReferralLeadSource(leadSource) && !String(body.referralName ?? "").trim()) {
+  if (requiresReferralName(leadSource) && !String(body.referralName ?? "").trim()) {
     return "지인 이름을 입력해주세요.";
   }
 
@@ -40,7 +40,7 @@ export function validateRequired(body: Record<string, unknown>) {
   return null;
 }
 
-export function isReferralLeadSource(leadSource: string) {
+export function requiresReferralName(leadSource: string) {
   return leadSource === "지인소개" || leadSource === "지인";
 }
 

@@ -45,7 +45,7 @@ export function CustomerForm(props: CustomerFormProps) {
     setValues((current) => ({
       ...current,
       leadSource: value,
-      referralName: isReferralLeadSource(value) ? current.referralName : "",
+      referralName: requiresReferralName(value) ? current.referralName : "",
     }));
   }
 
@@ -58,14 +58,14 @@ export function CustomerForm(props: CustomerFormProps) {
       return;
     }
 
-    if (isReferralLeadSource(values.leadSource) && !String(values.referralName ?? "").trim()) {
+    if (requiresReferralName(values.leadSource) && !String(values.referralName ?? "").trim()) {
       setError("지인 이름을 입력해주세요.");
       return;
     }
 
     const normalizedValues: CustomerFormValues = {
       ...values,
-      referralName: isReferralLeadSource(values.leadSource) ? values.referralName : "",
+      referralName: requiresReferralName(values.leadSource) ? values.referralName : "",
       estimateRequestDate: null,
       workEndTime: "",
       estimatePrice: null,
@@ -197,7 +197,7 @@ function LeadSourceField({ leadSource, referralName, onLeadSourceChange, onRefer
   return (
     <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(96px,0.8fr)]">
       <OptionPicker label="유입 경로 *" options={leadSourceOptions} value={leadSource} onChange={onLeadSourceChange} />
-      {isReferralLeadSource(leadSource) && (
+      {requiresReferralName(leadSource) && (
         <Input
           label="지인 이름 *"
           value={referralName}
@@ -208,7 +208,7 @@ function LeadSourceField({ leadSource, referralName, onLeadSourceChange, onRefer
   );
 }
 
-function isReferralLeadSource(leadSource: string) {
+function requiresReferralName(leadSource: string) {
   return leadSource === "지인소개" || leadSource === "지인";
 }
 

@@ -4,7 +4,7 @@ import { encryptText, hashPhone, normalizePhone } from "../../utils/crypto.js";
 import { createOrUpdateRevenueFromCustomerPayment } from "../finance/revenue.service.js";
 import { normalizeLeadSource, normalizePaymentStatus } from "./customer.constants.js";
 import { toCustomerResponse } from "./customer.mapper.js";
-import { isReferralLeadSource, toOptionalDate, toOptionalNumber, toOptionalString } from "./customer.validators.js";
+import { requiresReferralName, toOptionalDate, toOptionalNumber, toOptionalString } from "./customer.validators.js";
 
 type CustomerBody = Record<string, unknown>;
 type CustomerQuery = Record<string, unknown>;
@@ -26,7 +26,7 @@ function baseData(body: CustomerBody) {
   return {
     name: String(body.name ?? "").trim(),
     leadSource,
-    referralName: isReferralLeadSource(leadSource) ? toOptionalString(body.referralName) : null,
+    referralName: requiresReferralName(leadSource) ? toOptionalString(body.referralName) : null,
     productCategory: String(body.productCategory ?? ""),
     productType: String(body.productType ?? ""),
     productBrand: toOptionalString(body.productBrand),
